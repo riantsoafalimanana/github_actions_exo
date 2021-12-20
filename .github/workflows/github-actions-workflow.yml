@@ -1,12 +1,23 @@
 name: github-actions-workflow.yml
-on: [push]
+on:
+  push:
 jobs:
-  check-python-version:
+  install:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: '3.9'
-      - run: |
-          python --version
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pipenv
+        pipenv install --dev
+    - name: Lint with pylint
+      run: |
+        pipenv run pylint app
+    - name: Test with nose
+      run: |
+        pipenv run nosetests
